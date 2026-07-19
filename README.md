@@ -2,11 +2,43 @@
 
 ![CI](https://github.com/dagron27/restaurant-menu-app/actions/workflows/ci.yml/badge.svg)
 
-**Assignment:** Restaurant menu app backend, coursework project. This
-repository was originally hosted under a different name/account and has
+**Course:** `CSCI 300, Group Work for Computer Science`
+
+**Assignment:** Restaurant menu app backend
+
+This repository was originally hosted under a different name/account and has
 since been moved to this personal GitHub account
 (`github.com/dagron27/restaurant-menu-app`) with security remediation
 applied (see Known Issues below).
+
+## Assignment Intent
+
+The assignment (labeled "group work," though the author was the sole
+contributor) asked for an app with: (1) a home page with Breakfast/Dinner
+buttons; (2) at least two favorite meals per option, each with a photo and
+description, deployed on a LAMP stack with the server on the cloud; (3)
+click-through navigation between the home page, a menu page, and an item
+page showing the selected meal; (4) a GitHub workflow demonstrating team
+pull requests, review, approval, and merging into a team lead's repository;
+and (5) a short video demo of the app in use, submitted with the source
+code to D2L.
+
+**Confirmed implemented**, per the code (see Overview below): the
+Breakfast/Dinner home-page buttons, four menu items with photos and
+descriptions (two breakfast, two dinner) served from a MySQL `items_table`,
+and the click-through navigation between home, menu, and item pages. The
+stack (PHP + MySQL) matches LAMP's application-layer components, but
+whether it was ever actually deployed to a cloud server (as opposed to run
+locally) can't be confirmed from the repository alone -- that's a
+deployment/infrastructure detail outside what a git checkout can speak to.
+
+**Not applicable / not verifiable here:** item 4 (team PR review/approval
+workflow) describes a multi-person GitHub process that doesn't apply the
+way it's worded, since the author was this project's sole contributor
+despite the "group work" label -- there's no evidence of, or expectation
+of, cross-teammate PR review in a solo submission. Item 5's video demo is
+not currently in this repository; if it's added later, this section should
+be updated to reference it.
 
 ## Overview
 
