@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Breakfast Menu</title>
     <!-- Add your CSS files, styles, or external libraries here -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
 	<!-- Link to your JavaScript file -->
-    <script src="navigation.js"></script>
+    <script src="assets/js/navigation.js"></script>
 </head>
 
 <body>

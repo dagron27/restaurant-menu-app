@@ -57,8 +57,8 @@ Navigation flow:
   `SELECT * FROM items_table`, then reads a specific array index out of the
   result (0-3, one per item page) to render that item's image and
   description.
-- `navigation.js` provides simple `navigateTo(page)` and `goBack()` helpers
-  used by the Home/Back buttons; `styles.css` provides all page styling.
+- `assets/js/navigation.js` provides simple `navigateTo(page)` and `goBack()` helpers
+  used by the Home/Back buttons; `assets/css/styles.css` provides all page styling.
 
 There are no forms, no query-string parameters, and no other user-input
 entry points anywhere in the app -- every page renders a fixed, hardcoded
@@ -71,21 +71,21 @@ below for what does apply.
 - PHP with the `mysqli` extension (no Composer, no `composer.json`, no
   package manager of any kind).
 - MySQL/MariaDB server.
-- No client-side dependencies; `navigation.js` is hand-written vanilla JS
+- No client-side dependencies; `assets/js/navigation.js` is hand-written vanilla JS
   with no libraries.
 - No dependency manifest exists in this repo (no `composer.json`,
   `package.json`, or similar).
 
 ## Environment Setup
 
-A `schema.sql` is now included with dummy/placeholder seed data (not real
+A `db/schema.sql` is now included with dummy/placeholder seed data (not real
 menu content) so the app can be run from a clean checkout. To run it
 locally:
 
-1. Create/load the database and seed data: `mysql -u <user> -p < schema.sql`
+1. Create/load the database and seed data: `mysql -u <user> -p < db/schema.sql`
    (this creates the `restaurant_db` database, the `items_table` table, and
    inserts the four rows the app expects, in the correct order -- see the
-   comments in `schema.sql` for why order matters). Override the database
+   comments in `db/schema.sql` for why order matters). Override the database
    name via the `DB_NAME` environment variable if you use a different one.
 2. Set the `DB_HOST`, `DB_USER`, `DB_PASS`, and `DB_NAME` environment
    variables for your web server / PHP process. See `db.example.php` for a
@@ -95,7 +95,7 @@ locally:
 3. Point a PHP-capable web server at this directory and open `index.php`.
 4. Images referenced by `image_path` should live under `images/` (see
    `Beef.png`, `Focaccia.png`, `FruttaFresca.png`, `PennePomodoro.png`);
-   `schema.sql` already points each seed row at the correct file.
+   `db/schema.sql` already points each seed row at the correct file.
 
 ## Continuous Integration
 
@@ -105,7 +105,7 @@ functional test, not just a syntax check:
 
 1. Lints every `.php` file with `php -l`.
 2. Starts a throwaway MySQL 8.0 service container (disposable `root`/`root`
-   credentials, scoped to the CI run only) and loads `schema.sql` into it.
+   credentials, scoped to the CI run only) and loads `db/schema.sql` into it.
 3. Starts PHP's built-in web server against the checked-out repo.
 4. Requests `index.php`, both breakfast item pages, and both dinner item
    pages over real HTTP, and fails the job if any of them do not return a
@@ -193,10 +193,10 @@ exposing any sensitive column added to `items_table` in the future.
 - `index.php` line 3 has a stale comment referencing a `main_page.html`
   file that does not exist in this repo; the file actually included is
   `home.php`. Fix-it plan: update the comment to match.
-- `styles.css` line 1 has a header comment (`/* styles_main.css */`) that
+- `assets/css/styles.css` line 1 has a header comment (`/* styles_main.css */`) that
   names a different filename than the actual file. Fix-it plan: correct the
   comment or remove it.
-- `images/Focaccia1.png` is confirmed unused. Now that `schema.sql` fixes
+- `images/Focaccia1.png` is confirmed unused. Now that `db/schema.sql` fixes
   the seed data (and therefore exactly which four `image_path` values the
   app ever renders), it's confirmed that only `Beef.png`, `Focaccia.png`,
   `FruttaFresca.png`, and `PennePomodoro.png` are referenced -- fix-it plan:
@@ -204,7 +204,7 @@ exposing any sensitive column added to `items_table` in the future.
   here since removing image assets wasn't in scope for this pass).
 - **(FIXED)** No SQL schema or seed file was included anywhere in the repo,
   so the application couldn't run from a clean checkout without manually
-  recreating `items_table` and its rows. A `schema.sql` with dummy/
+  recreating `items_table` and its rows. A `db/schema.sql` with dummy/
   placeholder seed data has been added (see Environment Setup above) --
   it creates `restaurant_db.items_table` and inserts the four rows each
   page expects, in the correct order.

@@ -75,11 +75,11 @@ jobs:
           echo "MySQL did not become ready in time" >&2
           exit 1
 
-      # Load the schema and seed data. schema.sql itself runs
+      # Load the schema and seed data. db/schema.sql itself runs
       # `CREATE DATABASE IF NOT EXISTS restaurant_db`, so no separate
       # database-creation step is needed here.
       - name: Load schema.sql into MySQL
-        run: mysql -h 127.0.0.1 -uroot -proot < schema.sql
+        run: mysql -h 127.0.0.1 -uroot -proot < db/schema.sql
 
       # Start PHP's built-in web server in the background, rooted at the
       # repo directory, so the pages below can be exercised over HTTP.
