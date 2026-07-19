@@ -1,0 +1,108 @@
+name: CI
+
+# Run on every push (no branch filter) and allow manual runs from the
+# Actions tab.
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # Spin up a throwaway MySQL 8.0 container for the duration of the job.
+    # NOTE: the credentials below (root / root) are CI-only, disposable
+    # values scoped to this ephemeral service container. They are not real
+    # credentials, are never used outside this workflow run, and do not
+    # need to be kept secret.
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        # Wait for MySQL to accept connections before later steps try to
+        # use it -- the container takes a few seconds to initialize.
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    # CI-only environment variables consumed by db.php. DB_USER/DB_PASS
+    # match the throwaway "root"/"root" service-container credentials
+    # configured above, not any real database.
+    env:
+      DB_HOST: 127.0.0.1
+      DB_USER: root
+      DB_PASS: root
+      DB_NAME: restaurant_db
+
+    steps:
+      # Fetch the repository contents.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Install PHP with the mysqli extension, which db.php requires to
+      # connect to MySQL.
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          extensions: mysqli
+
+      # Lint every PHP file in the repo to catch syntax errors early.
+      # `php -l` exits non-zero on a parse error, which fails the job.
+      - name: Lint PHP files
+        run: |
+          find . -type f -name "*.php" -print0 | xargs -0 -n1 php -l
+
+      # Wait for the MySQL service container to report healthy before
+      # attempting to load the schema. The health check above already
+      # gates step scheduling, but this extra client-side ping guards
+      # against the port not being reachable yet.
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in $(seq 1 30); do
+            if mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
+              echo "MySQL is up"
+              exit 0
+            fi
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+          echo "MySQL did not become ready in time" >&2
+          exit 1
+
+      # Load the schema and seed data. schema.sql itself runs
+      # `CREATE DATABASE IF NOT EXISTS restaurant_db`, so no separate
+      # database-creation step is needed here.
+      - name: Load schema.sql into MySQL
+        run: mysql -h 127.0.0.1 -uroot -proot < schema.sql
+
+      # Start PHP's built-in web server in the background, rooted at the
+      # repo directory, so the pages below can be exercised over HTTP.
+      - name: Start PHP built-in server
+        run: |
+          php -S 127.0.0.1:8000 &
+          echo $! > php_server.pid
+          sleep 2
+
+      # Request each page that reads from the database and fail the job
+      # if any of them do not return a successful HTTP status.
+      - name: Smoke test pages
+        run: |
+          curl -f http://127.0.0.1:8000/index.php
+          curl -f http://127.0.0.1:8000/breakfast_page1.php
+          curl -f http://127.0.0.1:8000/breakfast_page2.php
+          curl -f http://127.0.0.1:8000/dinner_page1.php
+          curl -f http://127.0.0.1:8000/dinner_page2.php
+
+      # Stop the background PHP server started above.
+      - name: Stop PHP built-in server
+        if: always()
+        run: |
+          if [ -f php_server.pid ]; then
+            kill "$(cat php_server.pid)" || true
+          fi

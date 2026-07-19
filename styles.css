@@ -1,0 +1,121 @@
+/* styles_main.css */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #E0E0E0; /* Light gray background color */
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Center items horizontally */
+}
+
+.header-button-container {
+    display: flex;
+	justify-content: space-between;
+    align-items: center; /* Center items horizontally */
+}
+
+.home-button {
+	padding-right: 10px;
+	margin-left: 10px;
+}
+
+.main {
+    display: flex;
+    margin-top: 20px;
+    justify-content: space-between;
+}
+
+.left-container {
+    flex: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+	padding-left: 25px;
+	height: 200px; /* Set your desired fixed height */
+    background-color: #CB9962;
+    color: #3A3025;
+    font-size: 80px;
+}
+
+.selection-text {
+    font-size: 65px;
+}
+
+.item-text {
+    font-size: 50px;
+}
+
+.right-container {
+    flex: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+	width: 80%;
+}
+
+.image-container {
+	width: 80%;
+	margin-top: 20px;
+	margin-bottom: 20px; /* Add margin to create space between image and description */
+	text-align: center; /* Center inline content */
+}
+
+.description-container {
+	width: 80%;
+    font-size: 24px; /* Set your desired font size */
+}
+
+.button-one,
+.button-two {
+	width: 90%;
+	height: 250px;
+    margin-left: 75px;
+	margin-bottom: 50px; /* Adjust the value based on the separation you want */
+}
+
+button {
+    width: 90%;
+    height: 100%;
+    background-color: #DCC1A4;
+    color: #605140;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 80px;
+}
+
+button:hover {
+    background-color: #B88E6E;
+}
+
+button.home-button,
+button.back-button {
+    width: 100px;
+	height: 60px;
+	font-size: 30px; /* Decrease the font size */
+}
+
+button.home-button:hover,
+button.back-button:hover {
+    background-color: #B88E6E;
+}
+
+footer {
+    background-color: #333;
+    margin-top: 5px;
+    padding: 10px 0;
+    position: fixed;
+    color: #fff;
+    text-align: center;
+    bottom: 0;
+    width: 100%;
+}
