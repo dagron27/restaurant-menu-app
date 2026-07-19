@@ -1,8 +1,12 @@
 # Restaurant Menu App (PHP/MySQL)
 
-![CI](https://github.com/dagron27/RestaurantMenuAppBackend/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/dagron27/restaurant-menu-app/actions/workflows/ci.yml/badge.svg)
 
-**Assignment:** `RestaurantMenuAppBackend-main`.
+**Assignment:** Restaurant menu app backend, coursework project. This
+repository was originally hosted under a different name/account and has
+since been moved to this personal GitHub account
+(`github.com/dagron27/restaurant-menu-app`) with security remediation
+applied (see Known Issues below).
 
 ## Overview
 
@@ -61,6 +65,21 @@ locally:
    `Beef.png`, `Focaccia.png`, `FruttaFresca.png`, `PennePomodoro.png`);
    `schema.sql` already points each seed row at the correct file.
 
+## Continuous Integration
+
+A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push
+and can also be triggered manually via `workflow_dispatch`. It is a real
+functional test, not just a syntax check:
+
+1. Lints every `.php` file with `php -l`.
+2. Starts a throwaway MySQL 8.0 service container (disposable `root`/`root`
+   credentials, scoped to the CI run only) and loads `schema.sql` into it.
+3. Starts PHP's built-in web server against the checked-out repo.
+4. Requests `index.php`, both breakfast item pages, and both dinner item
+   pages over real HTTP, and fails the job if any of them do not return a
+   successful status -- this exercises the actual `db.php` connection path
+   and the seed data end to end, not just that the files parse.
+
 ## Known Issues
 
 ### Security Findings
@@ -74,9 +93,8 @@ the repo.** `db.php` previously contained a live-looking MySQL username and
 plaintext password checked directly into source control as literal string
 values.
 
-This repository is currently live (and private) on GitHub, but anyone with
-read access to it -- now or in the future, including if visibility ever
-changes -- could read this credential directly.
+This repository is public on GitHub, so anyone with the URL could have read
+this credential directly had it remained in the published history.
 **Fix applied:** `db.php` now reads its connection settings from
 environment variables (`DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`) via
 `getenv()` instead of hardcoding them. `DB_USER` and `DB_PASS` have no
@@ -84,15 +102,13 @@ default and the script stops with a clear error if they are not set. See
 `db.example.php` for a documented template of the required environment
 variables and how to set them under common setups (shell, PowerShell,
 Apache, php-fpm).
-**Important -- this local fix does not retroactively remove the old
-password from git history.** Editing `db.php` only changes the current
-working tree; the old plaintext credential remains readable in every prior
-commit that touched this file. Fully scrubbing it requires a git history
-rewrite (e.g. `git filter-repo` or BFG) or replacing the repo with a fresh
-history and force-pushing, followed by rotating the credential regardless.
-That history-scrub step is a separate action tied to the repo push and is
-tracked/handled outside of this code-remediation pass -- rotate the
-credential before or as part of that push if it was ever live anywhere.
+**History note:** this repository was published to GitHub with a single
+fresh commit containing only the already-remediated code -- the original
+history that contained the plaintext credential was never pushed here, so
+there is nothing to scrub in this repo's own history. That said, if the
+original credential was ever live anywhere (a real database, a shared
+dev environment), it should still be treated as compromised and rotated,
+independent of this repo's history.
 
 **Medium (FIXED) -- Verbose error reporting and raw DB error leakage.**
 `db.php` previously enabled `display_errors` and echoed the raw `mysqli`
@@ -164,6 +180,9 @@ exposing any sensitive column added to `items_table` in the future.
 ## Status
 
 This is a small school assignment/demo project, not production software.
-The credential-rotation and git-history-scrub items above are the most
-urgent open items given that this repository is hosted on GitHub; the rest
-are lower-priority cleanup that can be addressed incrementally.
+The security findings above are fixed and this repository's own git
+history contains only the already-remediated code (see the credential
+finding above for why there is nothing to scrub here). If the original
+plaintext credential was ever live in a real database, it should still be
+rotated independent of this repo. The remaining items (Dead Code and
+Hygiene) are lower-priority cleanup that can be addressed incrementally.
