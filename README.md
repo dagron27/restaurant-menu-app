@@ -66,6 +66,19 @@ array index against a fixed table. This rules out SQL injection, CSRF, and
 IDOR as attack vectors for the app as it exists today; see Known Issues
 below for what does apply.
 
+## Repository Organization
+
+The original submission had `schema.sql`, `navigation.js`, and
+`styles.css` all sitting directly at the repository root alongside the
+`.php` page files. `schema.sql` has been moved into `db/`, and
+`navigation.js`/`styles.css` into `assets/js/` and `assets/css/`, for
+portfolio-wide consistency with sibling repositories. The `.php` page
+files themselves stay at the repository root: PHP's serving model ties
+each page's URL to its file location, so moving them would break the
+in-app navigation links and CI's smoke-test URLs for no organizational
+benefit. `.github/workflows/ci.yml` and this README were updated to
+match the `db/`/`assets/` paths.
+
 ## Dependencies
 
 - PHP with the `mysqli` extension (no Composer, no `composer.json`, no
